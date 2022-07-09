@@ -40,13 +40,10 @@ jobs:
       - checkout
       - restore_cache:
           keys: [frontend-build]
-      
-        keys: [frontend-build]
       - run:
         name: Build front-end
         command: |
           cd frontend
-          echo $CODE
           npm install
           npm run build
       - save_cache:
@@ -59,7 +56,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-        keys: [backend-build]
+          keys: [backend-build]
       - run:
         name: Back-end build
         command: |
