@@ -45,8 +45,8 @@ jobs:
         command: |
           cd frontend
           echo $CODE 
-	  npm install
-	  npm run build
+	npm install
+	npm run build
       - save_cache:
         paths: [frontend/node_modules]
         keys: frontend-build
