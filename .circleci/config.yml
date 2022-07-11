@@ -12,10 +12,10 @@ orbs:
 #           channel: ALX-ND-C1
 #           template: basic_fail_1
 
-destroy-environment:
-  description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
-  parameters:
-    # Add parameter here   
+  destroy-environment:
+    description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
+    parameters:
+      # Add parameter here   
     steps:
       - run:
           name: Destroy environments
@@ -60,7 +60,7 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-deps
-      - notify_on_failure
+      # - notify_on_failure
 
   build-backend:
     docker:
@@ -78,7 +78,7 @@ jobs:
       - save_cache:
           paths: [backend/node_modules]
           key: backend-deps
-      - notify_on_failure
+      # - notify_on_failure
 
   test-frontend:
     docker:
@@ -93,7 +93,7 @@ jobs:
             cd frontend
             npm install
             npm run test
-      - notify_on_failure
+      # - notify_on_failure
                 
   test-backend:
     docker:
@@ -108,7 +108,7 @@ jobs:
             cd backend
             npm install
             npm run test 
-      - notify_on_failure
+      # - notify_on_failure
             
   scan-frontend:
     docker:
@@ -124,7 +124,7 @@ jobs:
             npm install
             npm audit fix --audit-level=critical --force
             npm audit --audit-level=critical
-      - notify_on_failure
+      # - notify_on_failure
 
   scan-backend:
     docker:
@@ -142,7 +142,7 @@ jobs:
             npm audit fix --force --audit-level=critical
             npm audit fix --force --audit-level=critical
             npm audit --audit-level=critical
-      - notify_on_failure
+      # - notify_on_failure
  
   deploy-infrastructure:
     docker:
