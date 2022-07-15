@@ -1,8 +1,29 @@
 version: 2.1
-orbs: 
-  slack: circleci/slack@4.10.1
+# orbs: 
+#   slack: circleci/slack@4.10.1
 
 commands:
+
+install_awscli:
+    description: Install AWS cli
+    steps:
+      - run:
+          name: Install AWS cli
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+
+  install_ansible:
+    description: Install Ansible
+    steps:
+      - run:
+          name: Install Ansible
+          command: |
+            sudo apt update
+            sudo apt install software-properties-common -y
+            sudo add-apt-repository --yes --update ppa:ansible/ansible
+            sudo apt install ansible -y
 
 destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
