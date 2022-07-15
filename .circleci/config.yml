@@ -224,24 +224,26 @@ deploy-infrastructure:
 
   configure-infrastructure:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: cimg/base:stable
     steps:
       - checkout
       - add_ssh_keys:
           fingerprints:
             - "17:13:33:11:1a:e1:92:8a:37:61:69:38:89:a0:66:61"
       - attach_workspace:
-          at: /tmp/.circleci/ansible
-      - run:
-          name: Install dependencies
-          command: |
-            apk add --update ansible aws-cli
+          at: ~/
+      
+      - install_awscli
+      - install_ansible
+            
       - run:
           name: Configure server
           command: |
-            ansible-playbook -i /tmp/.circleci/ansible/inventory.txt .circleci/ansible/configure-server.yml
-      - destroy-environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID}"
+            cd .circleci/ansible
+            cat inventory.txt
+
+            ansible-playbook -i inventory.txt configure-server.yml
+      - destroy-environment 
 
   run-migrations:
     docker:
