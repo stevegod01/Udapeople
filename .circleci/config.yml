@@ -4,6 +4,27 @@ orbs:
 
 commands:
 
+  install_awscli:
+    description: Install AWS cli
+    steps:
+      - run:
+          name: Install AWS cli
+          command: |
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+
+  install_ansible:
+    description: Install Ansible
+    steps:
+      - run:
+          name: Install Ansible
+          command: |
+            sudo apt update
+            sudo apt install software-properties-common -y
+            sudo add-apt-repository --yes --update ppa:ansible/ansible
+            sudo apt install ansible -y
+
 destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
@@ -180,7 +201,10 @@ jobs:
           fingerprints:
             - "17:13:33:11:1a:e1:92:8a:37:61:69:38:89:a0:66:61"
       - attach_workspace:
-          at: /tmp/.circleci/ansible
+          at: ~/
+
+      - install_awscli
+      - install_ansible
       - run:
           name: Install dependencies
           command: |
@@ -221,25 +245,25 @@ jobs:
           command: |
             sudo apt update
             sudo apt install -y awscli
-      - run:
-          name: Run migrations
-          command: |
-            cd backend
-            cat .env
-            npm i
-            npm run build
-            npm run migrations 2>&1 | tee migration-log.txt
+      # - run:
+      #     name: Run migrations
+      #     command: |
+      #       cd backend
+      #       cat .env
+      #       npm i
+      #       npm run build
+      #       npm run migrations 2>&1 | tee migration-log.txt
 
-            status_code="${PIPESTATUS[0]}"
-            if [[ ! "${status_code}" == 0 ]]; then
-              return 1
-            fi
+      #       status_code="${PIPESTATUS[0]}"
+      #       if [[ ! "${status_code}" == 0 ]]; then
+      #         return 1
+      #       fi
 
-            if cat migration-log.txt | grep "has been executed successfully"; then
-              curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" \
-                --request PUT --data "1" \
-                https://api.memstash.io/values/migration-"${CIRCLE_WORKFLOW_ID}"
-            fi
+      #       if cat migration-log.txt | grep "has been executed successfully"; then
+      #         curl -H "Content-Type: text/plain" -H "token: ${CIRCLE_WORKFLOW_ID}" \
+      #           --request PUT --data "1" \
+      #           https://api.memstash.io/values/migration-"${CIRCLE_WORKFLOW_ID}"
+      #       fi
       - persist_to_workspace:
           root: ~/project
           paths:
@@ -362,8 +386,8 @@ workflows:
           filters:
             branches:
               only: [master]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
       # - run-migrations:
       #     requires: [configure-infrastructure]
       # - deploy-frontend:
